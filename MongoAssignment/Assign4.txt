@@ -1,0 +1,47 @@
+Write Mongo query to retrieve documents from the orders in ascending order by total.
+db.orders.aggregate([{$sort: {"total": 1}}])
+
+Write Mongo query to retrieve the oldest paymentMethod from the payments collection as "_id".
+db.payments.aggregate([{$sort: {"date_time": 1}}, {$group: {"_id":"paymentMethod", "oldest":{$last: "$$ROOT"} }}])
+
+Write Mongo query to retrieve the recent paymentMethod from the payments collection as "_id".
+db.payments.aggregate([{$sort: {"date_time": 1}}, {$group: {"_id": "paymentMethod", "youngest": {$first: "$$ROOT"}}}])
+
+Write Mongo query to retrieve 2nd and 3rd buyers from the buyers collection.
+db.buyers.aggregate([{$skip: 1}, {$limit: 2}])
+
+Write Mongo query to retrieve the less Expensive product from order_details.
+db.order_details.aggregate([{$sort: {"price": 1}}, {$limit: 1}])
+
+Write Mongo query to retrieve the most Expensive product from order_details.
+db.order_details.aggregate([{$sort: {"price": -1}}, {$limit: 1}])
+
+Write Mongo query to retrieve the first order from the orders as per the order_date.
+db.orders.aggregate([{$sort: {"order_date":1}}, {$limit: 1}])
+
+Write Mongo query to retrieve the last 3 orders from the orders collection who have less total amount.
+db.orders.aggregate([{$sort: {"total": 1}}, {$limit: 3}, {$sort: {'order_date': 1}}])
+
+Write Mongo query to retrieve the most recent shipped order from the orders collection.
+db.orders.aggregate([{$match: {"status": "shipped"}}, {$sort: {"ship_date": -1}}, {$limit: 1}])
+
+Write Mongo query to get the total revenue from all orders
+db.orders.aggregate([{$group: {_id: null, totalRevenue: {$sum: "$total"}}}])
+
+Write Mongo query to retrieve all the orders that shipped before 2022-05-26
+db.orders.find({ "ship_date": { $lt: ISODate("2022-05-26") }, "status": "shipped" })
+
+Write Mongo query to find the maximum price as maxPrice of products and their names as name for each category.
+db.products.aggregate([{$group: {_id: null , maxPrice: {$max: "$price"}, name: {$first: "$name"}}}])
+
+Write Mongo query to find Most used payment Method as paymentMethod and the number of time it is used as count.
+db.payments.aggregate([ { $group: { _id: "$paymentMethod", count: { $sum: 1 } } }, { $sort: { count: -1 } }, { $limit: 1 }] )
+
+Write Mongo query to find the total count of orders by status.
+db.orders.aggregate([{$group : {_id: "$status", count: {$sum: 1}}}])
+
+Write Mongo query to retrieve the orders grouped by customer_id with the max total
+ db.orders.aggregate([ { $group: { _id: "$customer_id", total: { $sum: "$total" } } }, { $group: { _id: null, maxTotal: { $max: "$total" } } }] )
+
+Write Mongo query to retrieve the orders grouped by customer_id with the average total.
+db.orders.aggregate([{$group: {_id: "$customer_id", avgTotal : {$avg: "$total"}}}])
